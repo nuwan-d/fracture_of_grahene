@@ -1,0 +1,85 @@
+##---------------INITIALIZATION-------------------------------
+
+units          metal
+dimension 	    3 
+boundary       p p f
+atom_style 	atomic
+newton 		on 
+
+
+##---------------ATOM DEFINITION------------------------------
+
+read_data 	grap-data.data  
+
+
+##---------------FIXING EDGES OF GRAPHENE--------------------------------------
+
+region far_stress block -1.698000 19.302000 -1.000000 152.121000 -10.000000 10.000000 units box 
+group  far_stress region far_stress
+
+
+##---------------FORCE FIELDS---------------------------------
+
+pair_style 	airebo 3.0
+pair_coeff     * * CH.airebo C
+
+
+##---------------SETTINGS-------------------------------------
+
+timestep 	0.0005
+thermo 	100
+
+
+##---------------COMPUTES-------------------------------------
+
+compute 	1 all stress/atom NULL
+compute 	11 far_stress stress/atom NULL
+compute    2 all reduce sum c_1[1] c_1[2] c_1[3] c_11[1] c_11[2] c_11[3] 
+
+
+##---------------RELAXATION--------------------------------------
+
+thermo_style   custom step temp vol lx ly pe ke c_2[3] 
+fix            1 all npt temp 300.0 300.0 0.05 x 0 0 0.5 
+
+
+##---------------OUTPUTS--------------------------------------
+variable   Vol equal 78084.937284
+variable   ConvoFac equal 1/1.0e4
+variable   sigmaxx equal c_2[1]/v_Vol*v_ConvoFac
+variable   sigmayy equal c_2[2]/v_Vol*v_ConvoFac
+variable   SigmaxxFar equal c_2[4]/v_Vol*v_ConvoFac/0.138889
+variable   SigmayyFar equal c_2[5]/v_Vol*v_ConvoFac/0.138889
+thermo         1000
+run            50000
+
+
+##---------------DEFORMATION--------------------------------------
+unfix              1
+fix                1 all npt temp 300.0 300.0 0.05 x 0 0 0.5
+variable           srate equal 1.0e9
+variable           srate1 equal "v_srate / 1.0e12"
+fix                2 all deform 1 y erate ${srate1} units box remap x
+variable           StrainPerTs equal 5.0/1.0e7
+variable           strain equal v_StrainPerTs*(step)
+thermo_style       custom step temp lx ly pe v_strain v_sigmaxx v_sigmayy v_SigmaxxFar v_SigmayyFar 
+dump               2 all atom 5000 grap-tensile.lammpstrj
+reset_timestep     0
+fix                write all print 1000 " ${strain} ${sigmaxx} ${sigmayy} ${SigmaxxFar} ${SigmayyFar}" file stress_strain screen no
+run                40000
+
+
+##---------------RELAX--------------------------------------
+unfix          2
+fix            3 all ave/atom 1 5000 5000 c_1[1] c_1[2] 
+dump           3 all custom 5000 dump.stress.* id type x y z f_3[1] f_3[2]
+variable       strain equal 0.02
+run            20000
+
+
+##---------------DEFORMATION--------------------------------------
+unfix          3
+undump         3
+fix            2 all deform 1 y erate ${srate1} units box remap x
+variable       strain equal v_StrainPerTs*(step-20000)
+run            100000
