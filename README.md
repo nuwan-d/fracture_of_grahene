@@ -12,3 +12,5 @@ The MATLAB code “stress_distribution.m” can be used to plot the stress field
 [VMD](https://www.ks.uiuc.edu/Research/vmd/) or [OVITO](https://www.ovito.org/) can be used to visulaize the progress of the uniaxial tensile test.
 
 The MATLAB code “stress_strain_curves.m” can be used to plot the stress-strain data extracted from the MD simulation.
+
+Another LAMMPS tutorial on modeling aluminum, polymer, and their interface is [avilable here.](https://github.com/nuwan-d/LAMMPS_tutorials_for_short_courses)
