@@ -1,5 +1,5 @@
 # Molecular Dynamics Simulations of Fracture of Graphene: A Tutorial
-An overview of the tutorial has been given below.
+An overview of the tutorial has been shown in the movie below.
 
  <img src="overview.gif" width="400">
 
