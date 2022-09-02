@@ -1,5 +1,5 @@
 # Molecular Dynamics Simulations of Fracture of Graphene: A Tutorial
-An overview of the tutorial has been shown in the movie below.
+An overview of the tutorial has been shown in the movie below. Specific informtion about the simulation is available [in this paper](https://github.com/nuwan-d/fracture_of_grahene/blob/main/MD_tutorial.pdf), which was published by [the Society of Structural Engineers Sri Lanka](https://ssesl.lk/wp-content/uploads/2022/08/Modulus-June-2022.pdf?189db0&189db0).
 
  <img src="overview.gif" width="400">
 
